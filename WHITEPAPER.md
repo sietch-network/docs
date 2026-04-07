@@ -1,6 +1,6 @@
 # Sietch: A Privacy-First Payment Network
 
-> **Version:** 0.4.1
+> **Version:** 0.4.2
 > **Date:** April 2026
 > **Status:** Phase 0 complete; devnet operational; testnet in active development
 
@@ -412,7 +412,7 @@ Quantum computers do not threaten the confidentiality of past Sietch transaction
 
 ---
 
-## 6. Token and Economics
+## 6. Tokenomics
 
 > [!IMPORTANT]
 > SIETCH is a functional protocol component. This section describes the token's operational role in the network. Nothing in this section should be interpreted as a promise of financial return, and no projection of future token price or protocol fee volume is made.
@@ -423,7 +423,7 @@ Quantum computers do not threaten the confidentiality of past Sietch transaction
 | Token type          | Examples                                   | Function                                                                            | Backing                                                                                                                                                                         |
 | ------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Shielded assets** | pETH, pBTC, pBNB, pUSDT, pUSDC, pSOL, pXRP | Private representation of a deposited source-chain asset                            | Always 1:1 backed by the corresponding asset locked in its source-chain bridge contract. Not separate assets: cryptographic commitments representing claims on deposited funds. |
-| **SIETCH**          | --                                         | Validator staking, governance voting, validator compensation for computational work | Functional protocol component. No fixed backing.                                                                                                                                |
+| **SIETCH**          | N/A                                        | Validator staking, governance voting, validator compensation for computational work | Functional protocol component. No fixed backing.                                                                                                                                |
 
 
 Users interact with shielded assets (pETH, pBTC, etc.) for payments. They do not need to acquire or hold SIETCH to send, receive, or withdraw. Currently, only pETH is operational; additional shielded assets will be activated as their source-chain bridges are deployed.
@@ -438,7 +438,7 @@ Users interact with shielded assets (pETH, pBTC, etc.) for payments. They do not
 | Function               | Detail                                                                                                                                                                 |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Validator staking      | Required to operate a validator node on the Sietch network                                                                                                             |
-| Governance             | Vote on protocol parameter changes, treasury allocation, and contract upgrades                                                                                         |
+| Governance             | Vote on protocol parameter changes, treasury budgets and spending, and contract upgrades                                                                                  |
 | Validator compensation | Validators receive SIETCH distributions as compensation for computational work performed: proof verification, state root production, and block consensus participation |
 
 
@@ -473,23 +473,23 @@ flowchart LR
 
 
 
-**Fee allocation** (governance-configurable after mainnet):
+**Use of protocol fees** (governance-configurable after mainnet):
 
 
 | Destination                | Purpose                                                |
 | -------------------------- | ------------------------------------------------------ |
 | Protocol development       | Engineering, audits, infrastructure                    |
-| Validator compensation     | Compensate validators for computational work performed |
+| Validator compensation     | Ongoing compensation for computational work performed   |
 | Gas and sponsor operations | Cover source-chain gas for sponsored withdrawals       |
 
 
-Specific allocation ratios are governance-configurable and will be published before mainnet.
+Specific ratios among these destinations are governance-configurable and will be published before mainnet.
 
 **Exit reserve:** Each deposit contributes a fixed absolute amount to a pooled gas reserve (denominated in the source-chain's native unit). This reserve reimburses third-party sponsors who submit withdrawal transactions on behalf of users. The per-deposit reserve rate is governance-settable per bridge. This design means users can withdraw assets without holding a separate gas token or paying a withdrawal fee.
 
 ### Progressive decentralization
 
-The token distribution schedule is designed so that the founding team's allocation decreases proportionally over time as validator compensation, community allocation, and ecosystem grants are distributed. The target is for no single party's participation to be essential to the network's continued operation.
+Over time, the share of supply held by the founding team is expected to fall relative to validator compensation, community programs, and ecosystem grants as those schedules run. The aim is that no single party remains indispensable to operating the network.
 
 ---
 
