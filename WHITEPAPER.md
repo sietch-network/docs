@@ -1,6 +1,6 @@
 # Sietch: A Privacy-First Payment Network
 
-> **Version:** 0.4.5
+> **Version:** 0.5.0
 > **Date:** April 2026
 > **Status:** Phase 0 complete; devnet operational; testnet in active development
 
@@ -12,7 +12,7 @@
 - [4. Architecture](#4-architecture)
 - [5. Threat Model and Security](#5-threat-model-and-security)
   - [5.1 Post-Quantum Cryptography](#51-post-quantum-cryptography)
-- [6. Token and Economics](#6-token-and-economics)
+- [6. Tokenomics](#6-tokenomics)
 - [7. Governance and Upgrades](#7-governance-and-upgrades)
 - [8. Roadmap](#8-roadmap)
 - [9. Risks and Limitations](#9-risks-and-limitations)
@@ -57,7 +57,6 @@ The demand for privacy in crypto transactions is substantial and growing. As of 
 
 Existing solutions leave gaps:
 
-
 | Approach                                  | Gap                                                                                                  |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | On-chain privacy contracts (e.g. RAILGUN) | Subject to source-chain gas costs; single-chain only; no independent chain economics                 |
@@ -65,7 +64,6 @@ Existing solutions leave gaps:
 | General-purpose private VMs (e.g. Aztec)  | Broad scope targeting all of DeFi; not optimized for the payment use case                            |
 | Privacy coins (Monero, Zcash)             | Separate asset class; not anchored to existing ecosystems; regulatory friction for exchange listings |
 | Single-chain solutions                    | Privacy limited to one ecosystem; users holding assets across chains need multiple privacy solutions |
-
 
 ### What Sietch does
 
@@ -128,12 +126,9 @@ flowchart LR
     Wallet -.->|"PPOI innocence<br/>proof (optional)"| Exchange
 ```
 
-
-
 ### Supported assets
 
 The protocol is designed to support multiple assets, each with a dedicated bridge contract on its source chain. All shielded assets share the same Sietch network, ZK circuits, and privacy set.
-
 
 | Asset | Shielded form | Source chain           | Bridge type             | Status                              |
 | ----- | ------------- | ---------------------- | ----------------------- | ----------------------------------- |
@@ -145,11 +140,9 @@ The protocol is designed to support multiple assets, each with a dedicated bridg
 | SOL   | pSOL          | Solana                 | Native program          | Planned                             |
 | XRP   | pXRP          | XRP Ledger             | To be determined        | Planned                             |
 
-
 The `asset_id` field in every shielded note distinguishes assets within the unified pool. The ZK circuits enforce value conservation per asset type, so assets cannot be mixed or converted within the privacy layer. **Cross-asset conversion** is not a protocol function.
 
 ### Trust boundaries
-
 
 | Actor               | What they must trust                            | What is trustless                                                           |
 | ------------------- | ----------------------------------------------- | --------------------------------------------------------------------------- |
@@ -157,7 +150,6 @@ The `asset_id` field in every shielded note distinguishes assets within the unif
 | **Validator**       | Consensus liveness of the validator set         | Bridge contract; cannot forge notes, steal assets, or reverse nullifiers    |
 | **Exchange**        | PPOI proof verification (mathematical)          | No trust in the user's identity; proof is self-contained                    |
 | **Bridge contract** | Source-chain security and liveness              | Does not trust any single validator, relayer, or admin key for fund custody |
-
 
 ### How a transaction flows (happy path)
 
@@ -188,7 +180,6 @@ The core data structures are:
 
 The state machine recognizes four transaction types:
 
-
 | Transaction   | Inputs (public)                                | Proven in ZK                                                        | State change                                                                               |
 | ------------- | ---------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | **Mint**      | Commitment                                     | Deposit event matches note construction                             | Append commitment to tree                                                                  |
@@ -196,11 +187,9 @@ The state machine recognizes four transaction types:
 | **Transfer**  | Nullifier, output commitment(s)                | Prover owns input note; value conservation; Merkle membership       | Record nullifier; append output commitment(s)                                              |
 | **Burn**      | Nullifier, amount, recipient address, asset_id | Prover owns input note; amount, recipient, and asset bound in proof | Record nullifier; proof relayed to the corresponding source-chain bridge for asset release |
 
-
 ### Consensus
 
 The Sietch network uses a BFT consensus protocol built on Commonware primitives:
-
 
 | Property               | Value                                                               |
 | ---------------------- | ------------------------------------------------------------------- |
@@ -208,7 +197,6 @@ The Sietch network uses a BFT consensus protocol built on Commonware primitives:
 | Validator set (launch) | Curated set, scaling toward permissionless entry via SIETCH staking |
 | Validator set (mature) | Permissionless with SIETCH staking requirements                     |
 | Implementation         | Rust-native                                                         |
-
 
 Validators order transactions, verify ZK proofs, maintain the commitment tree and nullifier set, and produce state roots. The block leader relays the current Merkle root to each source-chain bridge contract after each finalized block.
 
@@ -227,20 +215,17 @@ An escape hatch is hardcoded into the bridge. If the state root goes stale for a
 
 ### External integrations
 
-
 | Dependency                     | Trust model                                                                                                                                                                                                                          |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Source-chain L1s**           | Settlement and bridge security inherited from each source chain's consensus. Currently: Ethereum. Planned: Bitcoin, BNB Chain, Solana, XRP Ledger.                                                                                   |
 | **Withdrawal sponsor network** | Submits withdrawal proofs on behalf of users. On Ethereum, this uses the EIP-4337 bundler infrastructure. Other chains will use chain-appropriate sponsor mechanisms. If sponsors are unavailable, users can submit proofs directly. |
 | **PPOI list providers**        | Publish datasets of known-bad transactions. Multiple independent providers (Chainalysis, Elliptic, etc.) reduce single-provider risk. PPOI proofs are optional for counterparties                                                    |
 
-
 > **Research note:** The research team is also evaluating an in-house PPOI list alongside third-party providers. Nothing here commits the project to either model; the design stays compatible with external lists if we ship our own feed or rely on partners.
 
 ### ZK proof system
 
 The proving system uses Halo2 with KZG commitments over the BN254 curve:
-
 
 | Property              | Choice              | Rationale                                                                                                                                                                         |
 | --------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -249,7 +234,6 @@ The proving system uses Halo2 with KZG commitments over the BN254 curve:
 | Hash (in-circuit)     | Poseidon            | ZK-friendly; significantly fewer constraints than general-purpose hashes inside circuits                                                                                          |
 | Hash (non-ZK)         | Keccak256           | EVM standard; used for Ethereum bridge interactions                                                                                                                               |
 | On-chain verification | SHPLONK verifier    | Generated deterministically from the circuit; deployed as immutable bytecode                                                                                                      |
-
 
 Proof generation runs entirely on the user's device (client-side). Private inputs (keys, note values, blinding factors) never leave the user's wallet. Proving keys are distributed via CDN with content-addressed fallback, cached locally after first download.
 
@@ -275,7 +259,6 @@ At rest, the seed is encrypted with AES-256-GCM using a passphrase-derived key. 
 
 ### Adversary classes
 
-
 | Adversary                      | Capability                                                       | Goal                                                                                             |
 | ------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | **Rational economic**          | Controls one or more validator nodes; may collude                | Abuse transaction ordering; censor transactions; front-run                                       |
@@ -284,9 +267,7 @@ At rest, the seed is encrypted with AES-256-GCM using a passphrase-derived key. 
 | **Privacy attacker**           | Observes public source-chain transactions and Sietch chain state | De-anonymize users by linking deposits to withdrawals                                            |
 | **Governance attacker**        | Accumulates sufficient SIETCH to control votes                   | Upgrade bridge maliciously; change fee parameters; misappropriate funds under governance control |
 
-
 ### Security assumptions
-
 
 | Assumption                                                      | Basis                                                                                                                             |
 | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -296,9 +277,7 @@ At rest, the seed is encrypted with AES-256-GCM using a passphrase-derived key. 
 | Poseidon hash is collision-resistant in the BN254 field         | Widely used in production ZK systems; algebraic cryptanalysis bounds are well-studied                                             |
 | User devices are not compromised                                | Client-side proof generation requires the nullifier key to remain secret                                                          |
 
-
 ### Attack surface and mitigations
-
 
 | Attack vector                    | Risk                         | Mitigation                                                                                                                                                                  |
 | -------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -312,16 +291,15 @@ At rest, the seed is encrypted with AES-256-GCM using a passphrase-derived key. 
 | Upgrade key compromise           | High impact (pre-multisig)   | Migration to multisig/timelock before mainnet; 48-hour delay; transparent governance process                                                                                |
 | Proving key substitution         | Medium                       | CDN-hosted with content-addressed fallback; cryptographic integrity checks; keys versioned by circuit release                                                               |
 
-
 ### Audit status
 
 No third-party security audit has been completed as of this writing. A comprehensive audit covering the bridge contract, ZK circuits, and state machine is targeted for early 2027. This timeline is not finalized.
 
 The bridge contract is tested with Foundry: unit tests, fuzz testing, and invariant testing campaigns. The ZK circuits are tested with native Rust test suites.
 
-## 5.1 Post-Quantum Cryptography
+### 5.1 Post-Quantum Cryptography
 
-### Context
+#### Context
 
 Quantum computers running Shor's algorithm can solve the Elliptic Curve Discrete Logarithm Problem (ECDLP) in polynomial time, breaking the cryptographic assumption behind ECDSA, BLS, KZG, and all pairing-based proof systems on curves like BN254 and BLS12-381. Recent resource estimates from Babbush et al. ([arXiv:2603.28846](https://arxiv.org/abs/2603.28846); [DOI 10.48550/arXiv.2603.28846](https://doi.org/10.48550/arXiv.2603.28846)) demonstrate that breaking 256-bit ECDLP requires fewer than 1,200 logical qubits and 90 million Toffoli gates, executable on a superconducting architecture with fewer than 500,000 physical qubits in minutes. This represents a roughly 20x reduction over prior estimates and places the threat within the engineering trajectory of current hardware programs. Google has stated a 2029 target for migrating its own enterprise cryptography to post-quantum algorithms ([Google cryptography migration timeline](https://blog.google/innovation-and-ai/technology/safety-security/cryptography-migration-timeline/)).
 
@@ -333,7 +311,7 @@ Three classes of quantum attack are relevant to Sietch:
 | **At-rest**  | Derive a private key from a public key permanently exposed on-chain                               | Unbounded; any CRQC suffices                                                       |
 | **On-setup** | Recover the toxic waste scalar from a trusted setup SRS, producing a persistent classical exploit | One-time computation; the resulting exploit is reusable without a quantum computer |
 
-### Sietch vulnerability surface
+#### Sietch vulnerability surface
 
 Sietch has five cryptographic surfaces relevant to quantum attack. Two are already quantum-resistant. Three require architectural changes.
 
@@ -356,11 +334,11 @@ commitment = Poseidon(asset_id, owner, value, blinding)
 
 Every step is a Poseidon hash over the BN254 scalar field. No scalar multiplication, no ECDLP assumption.
 
-### Migration plan
+#### Migration plan
 
 Surfaces 1 and 2 share a single solution. Surface 3 has a separate path. Both phases have zero dependency on Ethereum's own PQC timeline.
 
-#### Phase A: Replace KZG with FRI (addresses Surfaces 1 and 2)
+##### Phase A: Replace KZG with FRI (addresses Surfaces 1 and 2)
 
 Replace KZG/SHPLONK with FRI (Fast Reed-Solomon Interactive Oracle Proof of Proximity) -- a hash-based polynomial commitment scheme whose soundness depends only on collision-resistant hashing. No trusted setup is required.
 
@@ -372,7 +350,7 @@ Replace KZG/SHPLONK with FRI (Fast Reed-Solomon Interactive Oracle Proof of Prox
 
 After Phase A, the proving pipeline has no ECDLP dependency and no trusted setup. All Sietch-internal operations become quantum-resistant.
 
-#### Phase B: Post-quantum bridge admin authentication (addresses Surface 3)
+##### Phase B: Post-quantum bridge admin authentication (addresses Surface 3)
 
 The bridge owner key inherits Ethereum's account vulnerability: any EOA that has sent a transaction exposes its public key permanently. A CRQC derives the private key.
 
@@ -384,7 +362,7 @@ The bridge owner key inherits Ethereum's account vulnerability: any EOA that has
 
 Users' Ethereum EOAs remain quantum-vulnerable, but Sietch's architecture isolates the shielded identity from the source-chain identity. A compromised Ethereum key cannot spend or view existing shielded assets; it only affects the ability to initiate new deposits from that address.
 
-### PQC completion criteria
+#### PQC completion criteria
 
 The protocol is considered post-quantum when all of the following hold:
 
@@ -395,11 +373,11 @@ The protocol is considered post-quantum when all of the following hold:
 
 If criterion 4 holds, no component of Shor's algorithm is useful against any part of the Sietch protocol. Key derivation, note commitments, nullifiers, Merkle paths, stealth owners, and seed encryption at rest (AES-256-GCM) already satisfy this criterion today.
 
-### Retroactive privacy
+#### Retroactive privacy
 
 Quantum computers do not threaten the confidentiality of past Sietch transactions. Commitments and nullifiers are Poseidon hashes; recovering a preimage requires inverting the hash, not solving a discrete log. Grover's quadratic speedup for hash preimage search is consumed by error correction overhead and is not a practical threat. Unlike protocols that use ECDH for note encryption (e.g., Zcash Sapling, Monero), Sietch's note layer has no ECDH-based confidentiality to retroactively break.
 
-### Timeline and prioritization
+#### Timeline and prioritization
 
 | Priority | Action                                                                        | Target phase          |
 | -------- | ----------------------------------------------------------------------------- | --------------------- |
@@ -419,12 +397,10 @@ Quantum computers do not threaten the confidentiality of past Sietch transaction
 
 ### Multi-token model
 
-
 | Token type          | Examples                                   | Function                                                                            | Backing                                                                                                                                                                         |
 | ------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Shielded assets** | pETH, pBTC, pBNB, pUSDT, pUSDC, pSOL, pXRP | Private representation of a deposited source-chain asset                            | Always 1:1 backed by the corresponding asset locked in its source-chain bridge contract. Not separate assets: cryptographic commitments representing claims on deposited funds. |
 | **SIETCH**          | N/A                                        | Validator staking, governance voting, validator compensation for computational work | Functional protocol component. No fixed backing.                                                                                                                                |
-
 
 Users interact with shielded assets (pETH, pBTC, etc.) for payments. They do not need to acquire or hold SIETCH to send, receive, or withdraw. Currently, only pETH is operational; additional shielded assets will be activated as their source-chain bridges are deployed.
 
@@ -434,16 +410,13 @@ Users interact with shielded assets (pETH, pBTC, etc.) for payments. They do not
 
 **Functional roles:**
 
-
 | Function               | Detail                                                                                                                                                                 |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Validator staking      | Required to operate a validator node on the Sietch network                                                                                                             |
 | Governance             | Vote on protocol parameter changes, treasury budgets and spending, and contract upgrades                                                                                  |
 | Validator compensation | Validators receive SIETCH distributions as compensation for computational work performed: proof verification, state root production, and block consensus participation |
 
-
 ### Genesis allocation
-
 
 | Category                        | Allocation range | Vesting                                                                 |
 | ------------------------------- | ---------------- | ----------------------------------------------------------------------- |
@@ -453,7 +426,6 @@ Users interact with shielded assets (pETH, pBTC, etc.) for payments. They do not
 | Community and ecosystem         | 15-20%           | Grants, contributor allocations, ecosystem programs                     |
 | Early contributors and advisors | 5-8%             | 2-3 year vesting                                                        |
 | Public distribution             | 10-15%           | Mechanism to be determined before mainnet                               |
-
 
 Allocation ranges will be pinned to exact percentages before mainnet launch. The total across all categories sums to 100% of the 570M supply.
 
@@ -471,17 +443,13 @@ flowchart LR
     Reserve --> ExitPool["Exit reserve pool"]
 ```
 
-
-
 **Use of protocol fees** (governance-configurable after mainnet):
-
 
 | Destination                | Purpose                                                |
 | -------------------------- | ------------------------------------------------------ |
 | Protocol development       | Engineering, audits, infrastructure                    |
 | Validator compensation     | Ongoing compensation for computational work performed   |
 | Gas and sponsor operations | Cover source-chain gas for sponsored withdrawals       |
-
 
 Specific ratios among these destinations are governance-configurable and will be published before mainnet.
 
@@ -497,7 +465,6 @@ Over time, the share of supply held by the founding team is expected to fall rel
 
 ### Current state (devnet)
 
-
 | Component               | Current controller                          | Target (mainnet)                   |
 | ----------------------- | ------------------------------------------- | ---------------------------------- |
 | Bridge contract upgrade | Single owner key                            | DAO multisig + 48-hour timelock    |
@@ -507,7 +474,6 @@ Over time, the share of supply held by the founding team is expected to fall rel
 | Exit reserve rate       | Contract owner                              | DAO governance vote                |
 | PPOI list updates       | Contract owner                              | DAO governance vote                |
 | Emergency pause         | Contract owner                              | 3-of-5 DAO multisig                |
-
 
 ### Centralization disclosure
 
@@ -529,13 +495,11 @@ Specific thresholds (quorum, supermajority requirements, proposal lifecycle, vet
 
 ### Emergency layers
 
-
 | Layer        | Trigger                         | Action                                          | Who controls it                                |
 | ------------ | ------------------------------- | ----------------------------------------------- | ---------------------------------------------- |
 | Pause        | Critical bug discovered         | Bridge pauses withdrawals; deposits remain open | DAO multisig (3-of-5)                          |
 | Upgrade      | Bug fix ready                   | New implementation deployed via UUPS proxy      | DAO vote + 48-hour timelock                    |
 | Escape hatch | State root stale beyond timeout | Depositors withdraw original deposits directly  | Hardcoded in contract; automatic; no admin key |
-
 
 The escape hatch is the primary safety mechanism. It ensures that users can always recover their deposited assets even if the Sietch chain halts entirely, the validator set collapses, or a critical ZK bug is discovered. It requires no human intervention and cannot be disabled. Each source-chain bridge includes its own escape hatch.
 
@@ -596,7 +560,6 @@ Phase 0 is complete. The devnet is live and operational with production-equivale
 - Exchange integrations (PPOI verification documentation for counterparties)
 - Wallet integrations (MetaMask Snap for Ethereum; chain-native wallet support for other ecosystems)
 - Dandelion++ network-layer privacy
-
 
 ### What is not on the roadmap
 
@@ -754,5 +717,3 @@ This document describes the design, architecture, and intended operation of the 
 | PPOI blocked $530K Inferno Drainer, $9.5M zkLend | RAILGUN public communications | Verify before publication |
 | EIP-196/197 BN254 precompiles | Ethereum Yellow Paper; EIP-196/197 | Verified |
 | BFT requires n >= 3f+1 | Standard BFT references (PBFT, Tendermint) | Verified |
-
-
