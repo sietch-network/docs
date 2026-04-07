@@ -610,48 +610,40 @@ Phase 0 is complete. The devnet is live and operational with production-equivale
 
 ### Technical risks
 
-
-| Risk                                     | Severity | Detail                                                                                                                                                                                                                                                     |
-| ---------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unaudited code                           | High     | No third-party audit has been completed. The codebase is tested but not independently reviewed. Timeline for audit engagement is not finalized.                                                                                                            |
-| Novel circuit design                     | Medium   | The ZK circuits use established primitives (Poseidon, Halo2, BN254) but the specific circuit composition has not been formally verified.                                                                                                                   |
-| Proving key integrity                    | Medium   | Users must download proving keys on first use. Integrity is checked cryptographically, but a compromised CDN could serve malicious keys. Content-addressed fallback mitigates this.                                                                        |
-| Client-side proof generation performance | Medium   | Proof generation time varies by device capability. Mobile devices may experience longer generation times.                                                                                                                                                  |
-| Commonware consensus maturity            | Medium   | The consensus layer uses Commonware primitives that are newer than established BFT implementations.                                                                                                                                                        |
-| Multi-chain bridge surface area          | Medium   | Each additional source chain introduces a new bridge contract with its own security profile, verification model, and trust assumptions. Non-EVM chains (Bitcoin, Solana, XRP Ledger) require novel bridge designs that have not been specified or audited. |
-
+| Risk | Severity | Detail |
+| --- | --- | --- |
+| Unaudited code | High | No third-party audit has been completed. The codebase is tested but not independently reviewed. Timeline for audit engagement is not finalized. |
+| Novel circuit design | Medium | The ZK circuits use established primitives (Poseidon, Halo2, BN254) but the specific circuit composition has not been formally verified. |
+| Proving key integrity | Medium | Users must download proving keys on first use. Integrity is checked cryptographically, but a compromised CDN could serve malicious keys. Content-addressed fallback reduces this exposure. |
+| Client-side proof generation performance | Medium | Proof generation time varies by device capability. Mobile devices may experience longer generation times. |
+| Commonware consensus maturity | Medium | The consensus layer uses Commonware primitives that are newer than established BFT implementations. |
+| Multi-chain bridge surface area | Medium | Each additional source chain introduces a new bridge contract with its own security profile, verification model, and trust assumptions. Non-EVM chains (Bitcoin, Solana, XRP Ledger) require novel bridge designs that have not been specified or audited. |
 
 ### Operational risks
 
-
-| Risk                                   | Severity | Detail                                                                                                                                                  |
-| -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Key-person dependency                  | High     | The protocol is currently developed by a small team. Bus factor is low.                                                                                 |
-| Validator set centralization at launch | High     | The initial validator set is curated, not permissionless. Censorship resistance is limited until the set grows and transitions to permissionless entry. |
-| Single upgrade key (testnet)           | High     | Bridge upgrades are currently controlled by a single key. This is a known centralization vector being addressed before mainnet.                         |
-| Proving key distribution               | Medium   | The CDN and IPFS hosting are not yet operational for production.                                                                                        |
-
+| Risk | Severity | Detail |
+| --- | --- | --- |
+| Key-person dependency | High | The protocol is currently developed by a small team. Bus factor is low. |
+| Validator set centralization at launch | High | The initial validator set is curated, not permissionless. Censorship resistance is limited until the set grows and transitions to permissionless entry. |
+| Single upgrade key (testnet) | High | Bridge upgrades are currently controlled by a single key. This is a known centralization vector being addressed before mainnet. |
+| Proving key distribution | Medium | The CDN and IPFS hosting are not yet operational for production. |
 
 ### Regulatory risks
 
-
-| Risk                             | Detail                                                                                                                                                                                                                                                                              |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Token classification uncertainty | SIETCH is designed as a functional protocol component. A newly launched network with concentrated token ownership faces a harder argument for non-security classification than an established, broadly distributed network. Progressive decentralization is the primary mitigation. |
-| Privacy protocol scrutiny        | Privacy-preserving protocols face ongoing regulatory attention. Current U.S. policy (Treasury March 2026 report, DOJ memo) does not recommend new restrictions on non-custodial privacy tools, but policy can change.                                                               |
-| Developer liability              | The question of whether non-custodial software developers face money transmitter obligations is legally unresolved in some jurisdictions.                                                                                                                                           |
-| International variance           | Regulatory frameworks differ by jurisdiction. Users are responsible for compliance with their local laws.                                                                                                                                                                           |
-
+| Risk | Detail |
+| --- | --- |
+| Token classification uncertainty | SIETCH is described in this document as a functional protocol component for network operations and governance. Regulators may still apply securities or other frameworks depending on facts and jurisdiction. A newly launched network with concentrated token distribution can present a different factual posture than an established, broadly distributed network. Broader participation in validation and governance over time is the primary mitigation this document describes for that uncertainty. |
+| Privacy protocol scrutiny | Privacy-preserving protocols face ongoing regulatory attention. Recent U.S. Treasury reporting on digital assets and illicit finance (including materials published in March 2026) and related DOJ enforcement guidance discuss legitimate uses of non-custodial privacy tools alongside other enforcement priorities; that does not guarantee future treatment, and policy can change. |
+| Developer liability | The question of whether non-custodial software developers face money transmitter obligations is legally unresolved in some jurisdictions. |
+| International variance | Regulatory frameworks differ by jurisdiction. Users are responsible for compliance with their local laws. |
 
 ### Dependency risks
 
-
-| Dependency                        | Risk                                                                                                                                                                                                                                              |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Source-chain L1s                  | Bridge security is inherited from each source chain. A consensus failure on any supported chain would affect that chain's bridge. Currently: Ethereum. Each additional chain introduces its own dependency risk profile.                          |
+| Dependency | Risk |
+| --- | --- |
+| Source-chain L1s | Bridge security is inherited from each source chain. A consensus failure on any supported chain would affect that chain's bridge. Currently: Ethereum. Each additional chain introduces its own dependency risk profile. |
 | Withdrawal sponsor infrastructure | If sponsors are unavailable on a given chain, sponsored withdrawals fail for that chain. Users can still submit proofs directly at higher gas cost. On Ethereum, this uses EIP-4337 bundlers; other chains will use chain-appropriate mechanisms. |
-| PPOI list providers               | If all list providers go offline, new PPOI proofs cannot be generated for incoming deposits. Existing proofs remain valid.                                                                                                                        |
-
+| PPOI list providers | If all list providers go offline, new PPOI proofs cannot be generated for incoming deposits. Existing proofs remain valid. |
 
 ### Open problems
 
