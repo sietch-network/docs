@@ -2,7 +2,7 @@
 
 > **Version:** 0.5.1
 > **Date:** April 2026
-> **Status:** Phase 0 complete; devnet operational; testnet in active development
+> **Status:** Devnet operational; Testnet in active development
 
 ## Table of Contents
 
