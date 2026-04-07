@@ -520,7 +520,7 @@ The initial validator set is curated. Permissionless validator entry via SIETCH 
 SIETCH holders will vote on:
 
 - Protocol parameter changes (fee rate, exit reserve rate, time delay)
-- Treasury allocation
+- Protocol treasury spending decisions
 - Contract upgrades (via UUPS proxy)
 - PPOI list provider additions or removals
 - Validator staking requirements
@@ -554,6 +554,7 @@ Phase 0 is complete. The devnet is live and operational with production-equivale
 - CLI wallet with full deposit/transfer/withdraw flow
 - JSON-RPC node API (v1, frozen for PoC)
 - End-to-end transaction lifecycle validated on devnet
+- Deposit service fee parameters operational (per contract configuration)
 
 ### Phase 1: Testnet (in active development)
 
@@ -566,6 +567,7 @@ Phase 0 is complete. The devnet is live and operational with production-equivale
 - Proving key distribution infrastructure
 - WalletConnect v2 integration for Ethereum-side operations
 - Address format standardization and coin type registration
+- View key features for selective disclosure
 
 ### Phase 2: Security and audit
 
@@ -574,6 +576,7 @@ Phase 0 is complete. The devnet is live and operational with production-equivale
 - Comprehensive security audit (bridge contract, ZK circuits, state machine) -- targeted early 2027
 - Bug bounty program launch
 - Formal invariant specification for bridge contract
+- Encrypted mempool (censorship resistance)
 - Testnet stress testing (sustained high-throughput minting, concurrent withdrawals)
 
 ### Phase 3: Mainnet
@@ -583,25 +586,23 @@ Phase 0 is complete. The devnet is live and operational with production-equivale
 - Ethereum mainnet bridge deployment
 - SIETCH token genesis distribution
 - DAO governance activation
-- Fee collection enabled (deposit fee to treasury)
-- Public validator set with SIETCH staking
+- Public validator set with SIETCH stake requirements
 
-### Phase 4: Growth
+### Phase 4: Ecosystem expansion
 
 **Depends on:** Mainnet stability; anonymity set growth
 
 - Additional bridge deployments: BTC, BNB, USDT/USDC, SOL, XRP (each requiring a chain-specific bridge contract and watcher)
 - Exchange integrations (PPOI verification documentation for counterparties)
 - Wallet integrations (MetaMask Snap for Ethereum; chain-native wallet support for other ecosystems)
-- Encrypted mempool (censorship resistance)
 - Dandelion++ network-layer privacy
-- View key features for selective disclosure
+
 
 ### What is not on the roadmap
 
-- Yield generation on locked assets (introduces smart contract dependency risk on the bridge invariant)
+- Using locked bridge collateral in external protocols (adds smart contract dependency risk on the bridge invariant)
 - Fixed-denomination withdrawals (no evidence of need; arbitrary amounts are sufficient)
-- Cross-chain bridges for SIETCH token (deferred until exchange listing demand is concrete)
+- Cross-chain bridges for SIETCH token (deferred until counterparty integration requirements are concrete)
 
 ---
 
