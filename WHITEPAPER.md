@@ -1,6 +1,6 @@
 # Sietch: A Privacy-First Payment Network
 
-> **Version:** 0.4.2
+> **Version:** 0.4.5
 > **Date:** April 2026
 > **Status:** Phase 0 complete; devnet operational; testnet in active development
 
@@ -658,37 +658,33 @@ Phase 0 is complete. The devnet is live and operational with production-equivale
 
 ### Academic references
 
-
-| Reference                                                                                                                                                                                                                                                                          | Relevance                                                                                                                                           |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ben-Sasson et al., "Zerocash: Decentralized Anonymous Payment" (2014)                                                                                                                                                                                                              | Foundational architecture for shielded pools and nullifier-based spending                                                                           |
-| Bünz et al., "Bulletproofs: Short Proofs for Confidential Transactions" (2018)                                                                                                                                                                                                     | Range proof techniques informing value-hiding commitments                                                                                           |
-| Grassi et al., "Poseidon: A New Hash Function for Zero-Knowledge Proof Systems" (2021)                                                                                                                                                                                             | Hash function used inside all Sietch ZK circuits                                                                                                    |
-| Zcash Orchard Protocol Specification                                                                                                                                                                                                                                               | Reference for note structure, nullifier derivation, and Merkle tree design                                                                          |
-| The Halo2 Book (zcash.github.io/halo2)                                                                                                                                                                                                                                             | Proving system documentation                                                                                                                        |
-| Babbush et al., "Securing Elliptic Curve Cryptocurrencies against Quantum Vulnerabilities: Resource Estimates and Mitigations" (2026), [arXiv:2603.28846](https://arxiv.org/abs/2603.28846) [quant-ph], [DOI 10.48550/arXiv.2603.28846](https://doi.org/10.48550/arXiv.2603.28846) | Quantum resource estimates for breaking 256-bit ECDLP; attack taxonomy (on-spend, at-rest, on-setup); PQC migration framework; 57 pages, 14 figures |
-| Ben-Sasson et al., "Fast Reed-Solomon Interactive Oracle Proofs of Proximity" (STOC 2018)                                                                                                                                                                                          | FRI commitment scheme; basis for hash-based polynomial commitments in STARK proving systems                                                         |
-
+| Reference | Relevance |
+| --- | --- |
+| Ben-Sasson et al., "Zerocash: Decentralized Anonymous Payment" (2014) | Shielded pools and nullifier-based spending |
+| Bünz et al., "Bulletproofs: Short Proofs for Confidential Transactions" (2018) | Range proofs and value-hiding commitments |
+| Grassi et al., "Poseidon: A New Hash Function for Zero-Knowledge Proof Systems" (2021) | Poseidon as used in Sietch ZK circuits |
+| Zcash Orchard Protocol Specification | Note layout, nullifiers, Merkle tree design |
+| [The Halo2 Book](https://zcash.github.io/halo2/) | Halo2 proving system |
+| Babbush et al., "Securing Elliptic Curve Cryptocurrencies against Quantum Vulnerabilities: Resource Estimates and Mitigations" (2026), [arXiv:2603.28846](https://arxiv.org/abs/2603.28846) [quant-ph], [DOI 10.48550/arXiv.2603.28846](https://doi.org/10.48550/arXiv.2603.28846) | Quantum cost estimates for 256-bit ECDLP; attack taxonomy (on-spend, at-rest, on-setup); PQC migration notes |
+| Ben-Sasson et al., "Fast Reed-Solomon Interactive Oracle Proofs of Proximity" (STOC 2018) | FRI; hash-based polynomial commitments in STARK-style systems |
 
 ### Tooling and dependencies
 
+| Component | Stack |
+| --- | --- |
+| ZK circuits | Rust; Halo2 proving with Poseidon primitives |
+| On-chain verifier | SHPLONK/BN254 verifier bytecode from circuit definitions |
+| Bridge contract | Solidity (current stable); OpenZeppelin upgradeable patterns; Foundry tests |
+| Consensus | Commonware (Rust) |
+| Client-side wallet | Rust to WASM (browser); native desktop/CLI |
 
-| Component          | Stack                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------- |
-| ZK circuits        | Rust; Halo2-based proving with Poseidon primitives                                    |
-| On-chain verifier  | SHPLONK/BN254 verifier bytecode, generated deterministically from circuit definitions |
-| Bridge contract    | Solidity (latest stable); OpenZeppelin upgradeable contracts; Foundry for testing     |
-| Consensus          | Commonware primitives (Rust-native)                                                   |
-| Client-side wallet | Rust compiled to WASM for browser; native for desktop/CLI                             |
-
-
-All ZK dependencies use audited, production-grade implementations. The Halo2 fork used has been audited by Trail of Bits and Spearbit. The Poseidon implementation derives from an independently audited source.
+The Halo2 fork referenced by the implementation has been audited by Trail of Bits and Spearbit. Poseidon code follows an independently audited lineage.
 
 ### Deployed contracts
 
-The Ethereum bridge contracts are deployed on a public testnet with source verification. Contract addresses and deployment details will be published through official channels.
+The Ethereum bridge contracts are deployed on a public testnet with verified source. Addresses and deployment notes will be published through official channels.
 
-Mainnet contract addresses will be published after the security audit is complete and governance multisig is deployed. Bridge contracts for additional chains will be published as they reach deployment readiness.
+Mainnet addresses will be published after the security audit completes and the governance multisig is live. Additional chains will be listed as each deployment reaches readiness.
 
 ### Audit reports
 
@@ -696,38 +692,36 @@ None as of this version. Security audit targeted for early 2027 (see Section 8).
 
 ### Testnet access
 
-The Sietch devnet is live and operational, running production-equivalent logic across all components. The testnet is in active development. Node RPC specification (JSON-RPC v1) is documented and frozen for the current phase. Details on testnet access will be published through official channels.
+The Sietch devnet runs production-equivalent logic across components and remains under active development. The node RPC surface (JSON-RPC v1) is documented and frozen for this phase. Testnet access details will be published through official channels.
 
 ---
 
 ## Glossary
 
-
-| Term                                 | Definition                                                                                                                                                                                                                                 |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Shielded asset (pETH, pBTC, ...)** | A privacy-preserving representation of a deposited source-chain asset inside the Sietch network. Always 1:1 backed by the corresponding asset locked in its source-chain bridge contract. pETH is the first shielded asset (Ethereum/ETH). |
-| **SIETCH**                           | The native token of the Sietch network. Used for validator staking, governance voting, and validator compensation for computational work. Total supply: 570,000,000.                                                                       |
-| **Shielded note**                    | A cryptographic commitment representing ownership of a specific amount of a shielded asset (e.g. pETH, pBTC). Stored as a leaf in the commitment Merkle tree.                                                                              |
-| **Commitment**                       | A ZK-friendly hash of the note's fields (asset identifier, owner, value, blinding factor). Published on-chain; reveals nothing about the note's contents.                                                                                  |
-| **Nullifier**                        | A deterministic value derived from the note and the owner's nullifier key. Published when a note is spent, preventing double-spending.                                                                                                     |
-| **Commitment tree**                  | An append-only Merkle tree using a ZK-optimized hash function, storing all note commitments.                                                                                                                                               |
-| **PPOI**                             | Private Proofs of Innocence. A ZK proof mechanism demonstrating that funds are not linked to known illicit activity, without revealing user identity.                                                                                      |
-| **Nullifier key (nk)**               | The secret key that authorizes spending a note. Derived deterministically from the wallet seed.                                                                                                                                            |
-| **View key (vk)**                    | A key that grants read-only access to a user's transaction history. Derived deterministically from the wallet seed.                                                                                                                        |
-| **Owner**                            | The public identifier for a Sietch user, derived from the nullifier key via a one-way function. Included in note commitments.                                                                                                              |
-| **Bridge contract**                  | A chain-specific smart contract (or program) on a source chain that locks deposited assets and releases them upon verification of a valid ZK withdrawal proof. The Ethereum bridge is the first implementation.                            |
-| **Exit reserve**                     | A pooled gas reserve funded by a per-deposit contribution. Used to reimburse sponsors who submit withdrawal transactions on behalf of users.                                                                                               |
-| **State root**                       | The Merkle root of the commitment tree, relayed from the Sietch chain to each source-chain bridge contract after each finalized block.                                                                                                     |
-| **Escape hatch**                     | A hardcoded mechanism in the bridge contract that allows depositors to withdraw their original deposits if the state root has not been updated within a configured timeout period. Automatic; no admin key required.                       |
-| **UUPS**                             | Universal Upgradeable Proxy Standard. The proxy pattern used by the bridge contract, where the upgrade logic lives in the implementation contract and the proxy itself is immutable.                                                       |
-| **Halo2**                            | The zero-knowledge proof system used by Sietch. Based on polynomial IOPs with KZG commitments over BN254. The KZG backend uses a universal trusted setup (Hermez Perpetual Powers of Tau); circuit-specific setup is not required.         |
-| **BN254**                            | The elliptic curve used for ZK proof verification. Supported by native EVM precompiles (EIP-196/197) on Ethereum; non-EVM chains use alternative verification paths.                                                                       |
-| **Poseidon**                         | A hash function designed for efficiency inside zero-knowledge circuits. Used for commitments, nullifiers, key derivation, and the Merkle tree.                                                                                             |
-| **BFT**                              | Byzantine Fault Tolerant. The consensus model used by the Sietch validator set, tolerating up to f < n/3 faulty validators.                                                                                                                |
-| **Source chain**                     | The public blockchain where a user's original asset lives (e.g. Ethereum for ETH, Bitcoin for BTC). Each source chain has a dedicated bridge contract.                                                                                     |
-| **asset_id**                         | A field in every shielded note that identifies the asset type and source chain. Ensures value conservation is enforced per asset within the unified shielded pool.                                                                         |
-| **BSL**                              | Business Source License. The license under which Sietch protocol code is published. Source is viewable and auditable; commercial forking is restricted for a time-limited period, after which the code converts to an open-source license. |
-
+| Term | Definition |
+| --- | --- |
+| **Shielded asset (pETH, pBTC, ...)** | Privacy-preserving representation of a deposited source-chain asset in Sietch. Backed 1:1 by the asset locked in that chain's bridge contract. pETH is the first shielded asset (Ethereum/ETH). |
+| **SIETCH** | Native token for validator staking, governance voting, and validator compensation for computational work. Fixed total supply: 570,000,000. |
+| **Shielded note** | Commitment to ownership of an amount of a shielded asset (e.g. pETH, pBTC). Stored as a leaf in the commitment Merkle tree. |
+| **Commitment** | ZK-friendly hash of note fields (asset id, owner, value, blinding). On-chain publication hides note contents. |
+| **Nullifier** | Value derived from the note and nullifier key; published on spend to prevent double-spending. |
+| **Commitment tree** | Append-only Merkle tree (ZK-oriented hash) of all note commitments. |
+| **PPOI** | Private Proofs of Innocence: ZK evidence that funds are not tied to flagged activity, without identifying the user. |
+| **Nullifier key (nk)** | Secret key that authorizes spending a note; derived from the wallet seed. |
+| **View key (vk)** | Read-only key for transaction history; derived from the wallet seed. |
+| **Owner** | Public Sietch identifier from the nullifier key (one-way); included in commitments. |
+| **Bridge contract** | Source-chain contract or program that locks deposits and releases funds after a valid ZK withdrawal proof. Ethereum is the first deployment. |
+| **Exit reserve** | Pooled gas reserve from per-deposit contributions; reimburses sponsors who broadcast user withdrawals. |
+| **State root** | Commitment tree root relayed to each source-chain bridge after finalized blocks. |
+| **Escape hatch** | Bridge clause that lets depositors reclaim funds if the state root stalls past a timeout. Automatic; no admin key. |
+| **UUPS** | Universal Upgradeable Proxy Standard: upgrade logic in the implementation; proxy bytecode is fixed. |
+| **Halo2** | Sietch's proof system: polynomial IOPs with KZG over BN254. Universal setup (Hermez Perpetual Powers of Tau); no per-circuit trusted setup. |
+| **BN254** | Curve for proof verification. EVM precompiles (EIP-196/197) on Ethereum; other chains use their own verifier paths. |
+| **Poseidon** | Circuit-efficient hash for commitments, nullifiers, keys, and the Merkle tree. |
+| **BFT** | Byzantine fault tolerance: Sietch tolerates fewer than one-third dishonest validators. |
+| **Source chain** | Public chain where the original asset lives (e.g. Ethereum for ETH, Bitcoin for BTC); each has its own bridge. |
+| **asset_id** | Field identifying asset type and source chain; enforces conservation per asset in the unified pool. |
+| **BSL** | Business Source License: source is public and auditable; commercial use is restricted for a defined period, after which the license converts to an approved open-source license. |
 
 ---
 
@@ -735,15 +729,15 @@ The Sietch devnet is live and operational, running production-equivalent logic a
 
 This document describes the design, architecture, and intended operation of the Sietch protocol. It is provided for informational purposes only.
 
-**No financial advice.** Nothing in this document constitutes financial, legal, or tax advice. No projection of future token price, protocol fee volume, or financial return is made or implied.
+**No financial advice.** Nothing here is financial, legal, or tax advice. This document does not forecast token price, fee parameters, or other economic outcomes.
 
-**No guarantee of completeness.** The protocol is under active development. Features, parameters, and timelines described in this document may change. The roadmap reflects current plans and is not a commitment.
+**No guarantee of completeness.** The protocol is under active development. Features, parameters, and timelines in this document may change. The roadmap states current intent and is not a commitment.
 
-**Software, not a service.** The Sietch protocol is published as open-source software. The bridge contract is non-custodial: no entity holds, controls, or transmits user funds. Users interact with the protocol at their own risk.
+**Software, not a service.** The Sietch protocol is published as open-source software. The bridge is non-custodial: no party holds, controls, or routes user funds on users' behalf. Use is at your own risk.
 
-**Audit status.** The protocol has not been independently audited as of this version. Users should evaluate the risks described in Section 9 before interacting with the protocol.
+**Audit status.** The protocol has not been independently audited as of this version. Review Section 9 before relying on this design.
 
-**Regulatory status.** The SIETCH token is designed as a functional protocol component. Its regulatory classification may vary by jurisdiction. Users are responsible for evaluating whether their use of the protocol and its tokens complies with applicable laws in their jurisdiction.
+**Regulatory status.** SIETCH is a functional protocol token. Treatment under law varies by jurisdiction. You are responsible for compliance where you operate.
 
 **No warranty.** The software is provided "as is," without warranty of any kind, express or implied.
 
@@ -751,15 +745,14 @@ This document describes the design, architecture, and intended operation of the 
 
 ## Citation Log
 
-
-| Claim                                                                       | Source                                                                                                                                                                                                                                                                                                                                                                                                                                           | Status                             |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
-| [CIT-01] Privacy coin market cap $24-34B, $250B+ annual volume, 11.4% share | Primary: [CoinLaw](https://coinlaw.io/privacy-coins-vs-regulatory-compliance-statistics/) -- Additional context: [Chainalysis 2026 Crypto Crime Report](https://www.chainalysis.com/reports/crypto-crime-2026/) (crime/compliance framing of privacy asset flows); [Blockworks Research -- Programmable Privacy Landscape](https://app.blockworksresearch.com/unlocked/programmable-privacy-landscape) (institutional demand analysis, Oct 2025) | Verified                           |
-| Halo2-axiom audited by Trail of Bits and Spearbit                           | Axiom audit reports (linked from crates.io)                                                                                                                                                                                                                                                                                                                                                                                                      | Verified (audit reports published) |
-| Poseidon-primitives audited (Scroll fork)                                   | Scroll audit reports                                                                                                                                                                                                                                                                                                                                                                                                                             | Verified (audit report published)  |
-| RAILGUN ~$94M TVL                                                           | Public data (DeFiLlama / RAILGUN docs)                                                                                                                                                                                                                                                                                                                                                                                                           | Verify before publication          |
-| PPOI blocked $530K Inferno Drainer, $9.5M zkLend                            | RAILGUN public communications                                                                                                                                                                                                                                                                                                                                                                                                                    | Verify before publication          |
-| EIP-196/197 BN254 precompiles                                               | Ethereum Yellow Paper / EIP specifications                                                                                                                                                                                                                                                                                                                                                                                                       | Verified                           |
-| BFT requires n >= 3f+1                                                      | Standard BFT literature (PBFT, Tendermint)                                                                                                                                                                                                                                                                                                                                                                                                       | Verified                           |
+| Claim | Source | Status |
+| --- | --- | --- |
+| [CIT-01] Privacy coin market cap $24-34B, $250B+ annual volume, 11.4% share | Primary: [CoinLaw](https://coinlaw.io/privacy-coins-vs-regulatory-compliance-statistics/). Additional: [Chainalysis 2026 Crypto Crime Report](https://www.chainalysis.com/reports/crypto-crime-2026/) (crime/compliance context for privacy-related flows); [Blockworks Research, Programmable Privacy Landscape](https://app.blockworksresearch.com/unlocked/programmable-privacy-landscape) (Oct 2025 overview) | Verified |
+| Halo2-axiom audited by Trail of Bits and Spearbit | Axiom audit reports (linked from crates.io) | Verified (reports published) |
+| Poseidon-primitives audited (Scroll fork) | Scroll audit reports | Verified (report published) |
+| RAILGUN ~$94M TVL | Public dashboards and RAILGUN documentation | Verify before publication |
+| PPOI blocked $530K Inferno Drainer, $9.5M zkLend | RAILGUN public communications | Verify before publication |
+| EIP-196/197 BN254 precompiles | Ethereum Yellow Paper; EIP-196/197 | Verified |
+| BFT requires n >= 3f+1 | Standard BFT references (PBFT, Tendermint) | Verified |
 
 
