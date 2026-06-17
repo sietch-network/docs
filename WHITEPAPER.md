@@ -1,7 +1,7 @@
 # Sietch: A Privacy-First Payment Network
 
-> **Version:** 0.5.1
-> **Date:** April 2026
+> **Version:** 0.5.2
+> **Date:** June 2026
 > **Status:** Devnet operational; Testnet in active development
 
 ## Table of Contents
@@ -418,16 +418,16 @@ Users interact with shielded assets (pETH, pBTC, etc.) for payments. They do not
 
 ### Genesis allocation
 
-| Category | Allocation range | Vesting |
-| --- | --- | --- |
-| Founders | 12-15% | 4-year vesting, 1-year cliff |
-| Operations treasury | 15-20% | Unlocked over 5+ years via governance |
-| Validator compensation | 25-30% | Distributed over a multi-year schedule for computational work performed |
-| Community and ecosystem | 15-20% | Grants, contributor allocations, ecosystem programs |
-| Early contributors and advisors | 5-8% | 2-3 year vesting |
-| Public distribution | 10-15% | Mechanism to be determined before mainnet |
+| Bucket | % of supply | SIETCH | Vesting |
+| --- | ---: | ---: | --- |
+| Team and Advisors | 25.00% | 142,500,000 | 0% at TGE; founders and employees 12-month cliff then 36-month linear; advisors 6-month cliff then 18-month linear |
+| Strategic Backer Pool | 19.00% | 108,300,000 | 0% at TGE; 12-month cliff then 24-month linear. No public token sale. |
+| Treasury / DAO | 21.00% | 119,700,000 | Linear from TGE over 60 months; held behind a Foundation timelock |
+| Community / Ecosystem / Airdrops | 30.00% | 171,000,000 | Per-program schedules (genesis airdrop, validator delegation, ecosystem grants, liquidity bootstrapping, retroactive seasons) |
+| Public Liquidity / Launch | 5.00% | 28,500,000 | Deployed at TGE for exchange listings and on-chain liquidity |
+| **Total** | **100.00%** | **570,000,000** | |
 
-Allocation ranges will be pinned to exact percentages before mainnet launch. The total across all categories sums to 100% of the 570M supply.
+Figures are the source-of-truth allocation from the Tokenomics document. Insider buckets (Team, Advisors, Strategic Backers, Treasury) receive 0% at TGE. See [Tokenomics](/tokenomics) for per-cohort cliffs, lockups, and the full unlock schedule.
 
 ### Fee model
 

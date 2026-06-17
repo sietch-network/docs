@@ -1,7 +1,7 @@
 # SIETCH Tokenomics
 
-> **Version:** 1.3.1
-> **Date:** April 2026
+> **Version:** 1.4.0
+> **Date:** June 2026
 > **Status:** Public summary. Subject to refinement before mainnet TGE.
 
 > SIETCH is a functional protocol component used for validator staking, governance voting, and validator compensation for computational work. Nothing in this document is a promise of financial return, price projection, or revenue forecast. Users of the Sietch network do not need to acquire or hold SIETCH to deposit, transfer, or withdraw shielded assets.
@@ -34,7 +34,7 @@
 | Functional roles | Validator staking, on-chain governance, validator compensation for computational work |
 | User interaction | Not required to deposit, transfer, or withdraw shielded assets |
 
-The full 570,000,000 SIETCH is minted in a single transaction at the Network Launch Date (TGE). The token contract calls `finalizeMint()` in the same transaction, permanently renouncing mint authority. Total supply is fixed at the contract level; any future change requires a hard fork.
+The full 570,000,000 SIETCH is created at the Network Launch Date (TGE). No mechanism to issue additional supply exists after launch; the fixed cap is enforced at the protocol level, and any change would require a network-wide upgrade.
 
 ---
 
@@ -51,15 +51,15 @@ The full 570,000,000 SIETCH is minted in a single transaction at the Network Lau
 
 **Team and Advisors (25%)** is divided among the founders' grant, the employee and future-hire reserve, and the advisor cohort. No single advisor receives more than 0.50% of total supply. Per-cohort sub-allocations within this bucket are recorded on the public vesting registry at TGE.
 
-**Strategic Backer Pool (19%)** is the fixed pool from which SAFE Side-Letter holders draw if they elect tokens (in lieu of, or in addition to, equity). The pool size is fixed regardless of election outcomes; any un-elected portion flows to Treasury at the close of the 60-day Election Window after TGE. There is **no public token sale**.
+**Strategic Backer Pool (19%)** is a fixed pool allocated to strategic backers under private agreements. The pool size is fixed and cannot be refilled; any unallocated portion flows to Treasury at the close of a 60-day allocation window after TGE. There is **no public token sale**.
 
-**Treasury / DAO (21%)** is held at TGE in a Foundation-controlled `TimelockController`. The on-chain Governor is added as a proposer by mainnet month 18, at which point the Foundation multisig is downgraded to a `canceller`-only role.
+**Treasury / DAO (21%)** is held at TGE behind a Foundation-controlled governance timelock. On-chain governance gains proposal authority by mainnet month 18, at which point the Foundation multisig is reduced to a cancel-only role.
 
 ---
 
 ## 3. Vesting Schedule
 
-All vesting is measured from mainnet TGE. Continuous (per-second) accrual via Sablier V2 streams; the monthly cadence below is the discretization used in public reporting. There is **no** retroactive lump-sum release at the cliff: at the cliff date vesting *starts*, and tokens accrue from that point forward.
+All vesting is measured from mainnet TGE. Accrual is continuous (per-second); the monthly cadence below is the discretization used in public reporting. There is **no** retroactive lump-sum release at the cliff: at the cliff date vesting *starts*, and tokens accrue from that point forward.
 
 | Cohort | Cliff (months) | Linear vest after cliff (months) | Total duration | TGE unlock |
 |:---|---:|---:|---:|---:|
@@ -80,7 +80,7 @@ The founders are subject to a contractual no-sell on **all founders' tokens** (v
 
 - Vesting and lockup run in parallel: the founders vest into locked balances.
 - At month 24, the portion of founders' tokens that has vested during the lockup window becomes transferable. The exact vested figures at release are computable from the founders' vesting streams on the public registry.
-- The lockup is enforced on-chain via a single-purpose `LockupGate` wrapper contract that intercepts all withdrawals from the founders' vesting streams and reverts before the release timestamp.
+- The lockup is enforced on-chain: a single-purpose mechanism blocks all withdrawals from founder vesting until the release timestamp.
 - The wrapper supports a **one-way ratchet**: each founder may unilaterally extend their own lockup at any time before month 18 by signing a public on-chain commitment. The lockup cannot be shortened.
 - Override only via a public, governance-ratified motion (after Foundation handoff). No private waiver.
 
@@ -108,7 +108,7 @@ The 30% Community / Ecosystem / Airdrops bucket (171,000,000 SIETCH) is split ac
 - Deposit address must have at least 90 days of mainnet Ethereum activity at snapshot time.
 - Snapshot taken 30 days before TGE; ratios published only at TGE.
 
-**Validator Delegation Program.** The Foundation (later DAO) delegates SIETCH stake to validators meeting published technical and uptime thresholds. Validators do **not** receive principal SIETCH; they receive validator compensation flows in pETH (ETH-denominated) per section 9. Delegated principal is recalled to the Foundation/DAO when a validator exits. This is operational stake, not gifted supply.
+**Validator Delegation Program.** The Foundation (later DAO) delegates SIETCH stake to validators meeting published technical and uptime thresholds. Validators do **not** receive the delegated principal; they receive validator compensation in SIETCH for computational work per section 9. Delegated principal is recalled to the Foundation/DAO when a validator exits. This is operational stake, not gifted supply.
 
 **Retroactive seasons.** Each season opens nominations to all addresses meeting an on-chain interaction threshold during the season window. Audited contributors and prior-season recipients vote on impact, weighted quadratically. A public retrospective is published within 90 days of each season close.
 
@@ -132,22 +132,22 @@ The 5% Public Liquidity bucket (28,500,000 SIETCH) funds the operational infrast
 
 | Component | Detail |
 |:---|:---|
-| Genesis mint | All 570,000,000 SIETCH minted in a single transaction at TGE; `finalizeMint()` renounces mint authority in the same transaction. |
-| Reserve wallets | One reserve per allocation bucket: Team, Advisor, Strategic Backer, Treasury, Public Liquidity, plus a separate reserve for each of the five Community programs (ten reserves total). All multisigs are 4-of-7 or 3-of-5 with disjoint signer sets; **no two reserves share more than 1 signer**. Treasury sits behind a `TimelockController` rather than a bare multisig. |
-| Vesting contract | Sablier V2 `LockupLinear` (audited by Cantina, Spearbit, Code4rena; in production at ENS, Lido, GitcoinDAO). Streams are continuous per-second, revocable by the funding reserve. |
-| Founders lockup wrapper | Single-purpose `LockupGate` (~100 lines) that intercepts withdrawals before the release timestamp and exposes only a one-way `extendLockup` ratchet. No pause, no migrate, no upgrade path. |
-| Public registry | An on-chain `SietchVestingRegistry` contract publishes every grant: beneficiary, cohort, stream ID, reserve source, amount, cliff, total duration, release timestamp, and revocation status. Indexed by token-unlock dashboards from TGE - 30 days. |
+| Genesis mint | The full 570,000,000 SIETCH is created at TGE and mint authority is renounced in the same operation. No further supply can be issued. |
+| Reserve wallets | One reserve per allocation bucket: Team, Advisor, Strategic Backer, Treasury, Public Liquidity, plus a separate reserve for each of the five Community programs (ten reserves total). All reserves are multisig-controlled (4-of-7 or 3-of-5) with disjoint signer sets; **no two reserves share more than 1 signer**. Treasury sits behind a governance timelock rather than a bare multisig. |
+| Vesting | Continuous per-second accrual, implemented with audited, widely deployed vesting tooling. Streams are revocable by the funding reserve under the bounded clawback rules below. |
+| Founders lockup | Withdrawals from founder vesting are blocked until the release timestamp by a single-purpose lockup mechanism that supports only a one-way extension. It has no pause, migrate, or upgrade path and cannot be used to shorten the lockup. |
+| Public registry | An on-chain registry publishes every grant: beneficiary, cohort, reserve source, amount, cliff, total duration, release timestamp, and revocation status. Indexed by token-unlock dashboards from TGE - 30 days. |
 
-**Bounded clawback.** Default Sablier behavior on cancellation transfers all currently-vested-but-unwithdrawn tokens to the recipient; unvested tokens revert to the reserve. Clawback authority is bounded by cohort:
+**Bounded clawback.** On cancellation, all currently-vested-but-unwithdrawn tokens transfer to the recipient; unvested tokens revert to the reserve. Clawback authority is bounded by cohort:
 
 - **Founders:** no at-will clawback. Only on court order or public governance vote ratifying material breach.
-- **Strategic Backers (Side Letter holders):** restricted. Only on loss of eligibility under Side Letter section 5 (sanctions, KYC failure post-grant) or demonstrated breach of Side Letter terms.
-- **Employee and Advisors:** clawback on documented material breach, voluntary departure with cause-equivalent terms, or loss of eligibility under Side Letter section 5.
+- **Strategic Backers:** restricted. Only on loss of eligibility (sanctions or post-grant KYC failure) or demonstrated breach of the governing agreement.
+- **Employee and Advisors:** clawback on documented material breach, voluntary departure with cause-equivalent terms, or loss of eligibility (sanctions or post-grant KYC failure).
 - **Community programs:** per program (e.g., airdrop streams clawed back only on sanctions/KYC trigger; grant streams on milestone failure per the grant agreement).
 
 All clawbacks are public events emitted on-chain, mirrored on the vesting registry within 24 hours, with a written justification posted on the DAO forum.
 
-**Anti-rug guarantees.** Mint authority is renounced. No single multisig compromise touches more than 25% of supply. Founders cannot shorten the lockup. The Strategic Backer pool is sized to exactly 108,300,000 at TGE with no mechanism to refill. Treasury sits behind a `TimelockController` from genesis; Foundation control over Treasury is bounded by the 7-day timelock and is handed off to the on-chain Governor by month 18.
+**Anti-rug protections.** Mint authority is renounced. No single multisig compromise touches more than 25% of supply. Founders cannot shorten the lockup. The Strategic Backer pool is sized to exactly 108,300,000 at TGE with no mechanism to refill. Treasury sits behind a timelock from genesis; Foundation control over Treasury is bounded by the 7-day timelock and is handed off to on-chain governance by month 18.
 
 ---
 
@@ -167,7 +167,7 @@ All clawbacks are public events emitted on-chain, mirrored on the vesting regist
 | Emergency multisig | 5-of-9, geographically distributed; no two signers share a cloud or HSM provider |
 | Emergency multisig powers | (a) pause the bridge contract, (b) cancel queued malicious proposals, (c) trigger a 30-day grace pause on upgrades. **Cannot mint, transfer treasury, or upgrade contracts unilaterally.** |
 | Emergency multisig sunset | After mainnet month 24 OR upon DAO supermajority of at least 66% (whichever later), converts to a 7-day-veto-only role with a 7-of-9 threshold. |
-| Reference contracts | OpenZeppelin v5 `Governor`, `TimelockController`, Safe (Gnosis) |
+| Reference contracts | Built on OpenZeppelin v5 governance and timelock contracts and Safe (Gnosis) multisig |
 
 Quarterly treasury attestations (balances, inflows, outflows, runway in months) are published on the DAO forum and the public dashboard.
 
@@ -175,13 +175,13 @@ Quarterly treasury attestations (balances, inflows, outflows, runway in months) 
 
 ## 9. Service Fees and Validator Compensation
 
-The protocol charges a 15 bps service fee on bridge deposits. A governance-set share of that fee (initially 30-40%) funds validator compensation, denominated in **pETH** (ETH-denominated, since deposits are ETH).
+The protocol charges a 15 bps service fee on bridge deposits, collected in the deposited asset. A governance-set share of that fee (initially 30-40%) funds validator compensation. Validator compensation is paid in **SIETCH**; shielded assets such as pETH are 1:1 pegged claims on deposited funds and are never used to compensate network participants.
 
 | Element | Detail |
 |:---|:---|
 | Fee source | 15 bps on bridge deposits (per the bridge contract) |
-| Validator compensation | Paid in pETH for computational work: proof verification, state root production, and block consensus participation |
-| SIETCH role for validators | Stake required for eligibility; SIETCH itself is not the compensation asset |
+| Validator compensation | Paid in SIETCH for computational work: proof verification, state root production, and block consensus participation |
+| SIETCH role for validators | Stake required for eligibility, and the asset in which compensation is paid |
 | Operational cost coverage | Service fees sustain network operations; remaining fee share funds protocol development and gas sponsorship per governance |
 | Non-validator holder distributions | None. There is no SIETCH buyback, no fee redistribution to non-validating SIETCH holders, and no fee-share mechanism for SIETCH holders who do not operate validator infrastructure. |
 
@@ -220,7 +220,7 @@ The full month-by-month unlock waterfall (first 24 months and beyond) is publish
 | Reserve multisig signer policy | Published before TGE - 60 days |
 | Quarterly treasury attestations | Published on the DAO forum from quarter 1 onward |
 | Distribution health dashboard | Published before TGE; updated daily |
-| Audit scope | OpenZeppelin v5 reference contracts for Governor, Timelock, Safe; Sablier V2 (already audited); custom `LockupGate` wrapper requires its own audit before TGE |
+| Audit scope | Governance and treasury controls build on industry-standard, independently audited contract libraries; custom components are audited before mainnet launch |
 
 **Distribution health targets** (for the post-vest steady state, around mainnet month 48):
 
@@ -237,6 +237,8 @@ The full month-by-month unlock waterfall (first 24 months and beyond) is publish
 
 This document is a public summary of the SIETCH token's operational role and distribution structure. It is not an offer to sell or a solicitation to buy any security, token, or financial instrument. SIETCH is a functional protocol component required for validator participation in network consensus, on-chain governance voting, and the receipt of validator compensation for computational work performed.
 
-Acquisition and use of SIETCH is restricted in certain jurisdictions and may be limited to specific categories of participants under applicable law. Nothing in this document should be read as a forecast of token price, protocol fee volume, network adoption, or any financial outcome. The Sietch network is open-source software; participation is voluntary, non-custodial, and subject to the operational risks documented in the project whitepaper.
+Acquisition and use of SIETCH is restricted in certain jurisdictions and may be limited to specific categories of participants under applicable law. Distribution programs described here, including the genesis airdrop, may exclude participants in restricted or sanctioned jurisdictions. Nothing in this document should be read as a forecast of token price, protocol fee volume, network adoption, or any financial outcome. The Sietch network is open-source software; participation is voluntary, non-custodial, and subject to the operational risks documented in the project whitepaper.
 
-Public-facing copy in this document is derived from the canonical internal specification maintained by Kaynetik LLC and reviewed for compliance with the SEC/CFTC joint interpretive framework on digital commodities. The SAFE and Token Side Letter forms governing accredited participation are private instruments executed under Reg D 506(b)/(c) and Reg S; their terms are not summarized here.
+Nothing in this document is financial, legal, investment, or tax advice. Consult your own advisors before participating in any network activity.
+
+**Forward-looking statements.** Allocation buckets, vesting schedules, governance timelines, liquidity targets, and other future-dated items describe current intent only. They are not commitments and may change as the protocol matures. Dates and parameters stated here may differ from what is ultimately implemented.
